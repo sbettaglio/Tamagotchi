@@ -23,20 +23,58 @@ namespace Tamagotchi.Controllers
     public Pet GetOnePet(int id)
     {
       var pet = db.Pets.FirstOrDefault(p => p.Id == id);
+      var lastInteractedWith = pet.LastInteractedWith;
+      var neglectedPet = pet.IsDead;
+      neglectedPet = pet.NeglectedPet(lastInteractedWith);
+      if (neglectedPet == true)
+      {
+        neglectedPet = true;
+        lastInteractedWith = DateTime.Now;
+        pet.DeathDate = DateTime.Now;
+        db.SaveChanges();
+      }
+      else if (neglectedPet == false)
+      {
+        lastInteractedWith = DateTime.Now;
+        db.SaveChanges();
+      }
       return pet;
     }
     [HttpPost]
     public Pet CreateNewPet(Pet newPet)
     {
       db.Pets.Add(newPet);
-      newPet.LastInteractedWith = DateTime.Now;
-      db.SaveChanges();
+      var killed = newPet.IsDead;
+      killed = newPet.KilledPet(killed);
+      if (killed == true)
+      {
+        newPet.IsDead = true;
+        newPet.DeathDate = DateTime.Now;
+        //newPet.LastInteractedWith = DateTime.Now;
+        db.SaveChanges();
+      }
+      else if (killed == false)
+      {
+
+        //newPet.LastInteractedWith = DateTime.Now;
+        db.SaveChanges();
+      }
       return newPet;
     }
     [HttpPatch("{id}/play")]
     public Pet Play(int id)
     {
       var playPet = db.Pets.FirstOrDefault(p => p.Id == id);
+      var lastInteractedWith = playPet.LastInteractedWith;
+      var neglectedPet = playPet.IsDead;
+      neglectedPet = playPet.NeglectedPet(lastInteractedWith);
+      if (neglectedPet == true)
+      {
+        playPet.IsDead = true;
+        playPet.DeathDate = DateTime.Now;
+        playPet.LastInteractedWith = DateTime.Now;
+        db.SaveChanges();
+      }
       var killed = playPet.IsDead;
       killed = playPet.KilledPet(killed);
       if (killed == true)
@@ -60,7 +98,8 @@ namespace Tamagotchi.Controllers
     public Pet Feed(int id)
     {
       var feedPet = db.Pets.FirstOrDefault(p => p.Id == id);
-      var killed = feedPet.IsDead;
+      var lastInteractedWith = feedPet.LastInteractedWith;
+      var killed = feedPet.NeglectedPet(lastInteractedWith);
       killed = feedPet.KilledPet(killed);
       if (killed == true)
       {
@@ -83,7 +122,8 @@ namespace Tamagotchi.Controllers
     public Pet Scold(int id)
     {
       var scoldPet = db.Pets.FirstOrDefault(p => p.Id == id);
-      var killed = scoldPet.IsDead;
+      var lastInteractedWith = scoldPet.LastInteractedWith;
+      var killed = scoldPet.NeglectedPet(lastInteractedWith);
       killed = scoldPet.KilledPet(killed);
       if (killed == true)
       {

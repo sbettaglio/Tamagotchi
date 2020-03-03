@@ -26,5 +26,19 @@ namespace Tamagotchi.Models
       }
       return killed;
     }
+    public virtual bool NeglectedPet(DateTime lastInteractedWith)
+    {
+      var dead = false;
+      var diff = DateTime.Now;
+      var neglected = diff.Subtract(lastInteractedWith).TotalDays;
+      if (neglected > 3)
+      {
+        dead = true;
+        return dead;
+      }
+
+      return dead;
+
+    }
   }
 }
