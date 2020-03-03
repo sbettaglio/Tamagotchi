@@ -3,6 +3,7 @@ using Tamagotchi.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
+using System;
 
 namespace Tamagotchi.Controllers
 {
@@ -28,6 +29,7 @@ namespace Tamagotchi.Controllers
     public Pet CreateNewPet(Pet newPet)
     {
       db.Pets.Add(newPet);
+      newPet.LastInteractedWith = DateTime.Now;
       db.SaveChanges();
       return newPet;
     }
@@ -35,26 +37,67 @@ namespace Tamagotchi.Controllers
     public Pet Play(int id)
     {
       var playPet = db.Pets.FirstOrDefault(p => p.Id == id);
-      playPet.HappinessLevel = playPet.HappinessLevel + 5;
-      playPet.HungerLevel = playPet.HungerLevel + 3;
-      db.SaveChanges();
+      var killed = playPet.IsDead;
+      killed = playPet.KilledPet(killed);
+      if (killed == true)
+      {
+        playPet.IsDead = true;
+        playPet.DeathDate = DateTime.Now;
+        playPet.LastInteractedWith = DateTime.Now;
+        db.SaveChanges();
+      }
+      else if (killed == false)
+      {
+        playPet.LastInteractedWith = DateTime.Now;
+        playPet.HappinessLevel = playPet.HappinessLevel + 5;
+        playPet.HungerLevel = playPet.HungerLevel + 3;
+        db.SaveChanges();
+      }
       return playPet;
     }
+
     [HttpPatch("{id}/feed")]
     public Pet Feed(int id)
     {
       var feedPet = db.Pets.FirstOrDefault(p => p.Id == id);
-      feedPet.HappinessLevel = feedPet.HappinessLevel + 3;
-      feedPet.HungerLevel = feedPet.HungerLevel - 3;
-      db.SaveChanges();
+      var killed = feedPet.IsDead;
+      killed = feedPet.KilledPet(killed);
+      if (killed == true)
+      {
+        feedPet.LastInteractedWith = DateTime.Now;
+        feedPet.IsDead = true;
+        feedPet.DeathDate = DateTime.Now;
+
+        db.SaveChanges();
+      }
+      else if (killed == false)
+      {
+        feedPet.LastInteractedWith = DateTime.Now;
+        feedPet.HappinessLevel = feedPet.HappinessLevel + 3;
+        feedPet.HungerLevel = feedPet.HungerLevel - 3;
+        db.SaveChanges();
+      }
       return feedPet;
     }
     [HttpPatch("{id}/scold")]
     public Pet Scold(int id)
     {
       var scoldPet = db.Pets.FirstOrDefault(p => p.Id == id);
-      scoldPet.HappinessLevel = scoldPet.HappinessLevel - 5;
-      db.SaveChanges();
+      var killed = scoldPet.IsDead;
+      killed = scoldPet.KilledPet(killed);
+      if (killed == true)
+      {
+        scoldPet.LastInteractedWith = DateTime.Now;
+        scoldPet.IsDead = true;
+        scoldPet.DeathDate = DateTime.Now;
+        db.SaveChanges();
+      }
+      else if (killed == false)
+      {
+        scoldPet.LastInteractedWith = DateTime.Now;
+        scoldPet.HappinessLevel = scoldPet.HappinessLevel - 5;
+        db.SaveChanges();
+      }
       return scoldPet;
     }
     [HttpDelete("{id}")]
@@ -66,5 +109,6 @@ namespace Tamagotchi.Controllers
       return Ok();
     }
   }
+
 }
 
