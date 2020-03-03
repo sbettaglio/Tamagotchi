@@ -36,7 +36,7 @@ namespace Tamagotchi.Controllers
     {
       var playPet = db.Pets.FirstOrDefault(p => p.Id == id);
       playPet.HappinessLevel = playPet.HappinessLevel + 5;
-      playPet.HungerLever = playPet.HungerLever + 3;
+      playPet.HungerLevel = playPet.HungerLevel + 3;
       db.SaveChanges();
       return playPet;
     }
@@ -45,7 +45,7 @@ namespace Tamagotchi.Controllers
     {
       var feedPet = db.Pets.FirstOrDefault(p => p.Id == id);
       feedPet.HappinessLevel = feedPet.HappinessLevel + 3;
-      feedPet.HungerLever = feedPet.HungerLever - 3;
+      feedPet.HungerLevel = feedPet.HungerLevel - 3;
       db.SaveChanges();
       return feedPet;
     }

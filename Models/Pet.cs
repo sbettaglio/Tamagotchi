@@ -8,7 +8,8 @@ namespace Tamagotchi.Models
     public string Name { get; set; }
     public DateTime Birthday { get; set; }
     public DateTime DeathDate { get; set; }
-    public int HungerLever { get; set; }
+    public int HungerLevel { get; set; }
     public int HappinessLevel { get; set; }
+    public bool IsDead { get; set; }
   }
 }
