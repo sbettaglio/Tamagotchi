@@ -40,6 +40,18 @@ namespace Tamagotchi.Controllers
       }
       return pet;
     }
+    [HttpGet("alive")]
+    public List<string> AlivePets()
+    {
+      var alivePets = db.Pets.Where(p => p.IsDead == false).ToList();
+      var alivePetList = new List<string>();
+      foreach (var pet in alivePets)
+      {
+        alivePetList.Add(pet.Name);
+      }
+      return alivePetList;
+
+    }
     [HttpPost]
     public Pet CreateNewPet(Pet newPet)
     {
@@ -50,13 +62,13 @@ namespace Tamagotchi.Controllers
       {
         newPet.IsDead = true;
         newPet.DeathDate = DateTime.Now;
-        //newPet.LastInteractedWith = DateTime.Now;
+
         db.SaveChanges();
       }
       else if (killed == false)
       {
 
-        //newPet.LastInteractedWith = DateTime.Now;
+
         db.SaveChanges();
       }
       return newPet;
@@ -99,7 +111,15 @@ namespace Tamagotchi.Controllers
     {
       var feedPet = db.Pets.FirstOrDefault(p => p.Id == id);
       var lastInteractedWith = feedPet.LastInteractedWith;
-      var killed = feedPet.NeglectedPet(lastInteractedWith);
+      var neglectedPet = feedPet.NeglectedPet(lastInteractedWith);
+      if (neglectedPet == true)
+      {
+        feedPet.IsDead = true;
+        feedPet.DeathDate = DateTime.Now;
+        feedPet.LastInteractedWith = DateTime.Now;
+        db.SaveChanges();
+      }
+      var killed = feedPet.IsDead;
       killed = feedPet.KilledPet(killed);
       if (killed == true)
       {
@@ -123,7 +143,15 @@ namespace Tamagotchi.Controllers
     {
       var scoldPet = db.Pets.FirstOrDefault(p => p.Id == id);
       var lastInteractedWith = scoldPet.LastInteractedWith;
-      var killed = scoldPet.NeglectedPet(lastInteractedWith);
+      var neglectedPet = scoldPet.NeglectedPet(lastInteractedWith);
+      if (neglectedPet == true)
+      {
+        scoldPet.IsDead = true;
+        scoldPet.DeathDate = DateTime.Now;
+        scoldPet.LastInteractedWith = DateTime.Now;
+        db.SaveChanges();
+      }
+      var killed = scoldPet.IsDead;
       killed = scoldPet.KilledPet(killed);
       if (killed == true)
       {

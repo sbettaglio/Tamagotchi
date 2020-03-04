@@ -19,7 +19,7 @@ namespace Tamagotchi.Models
       Random rand = new Random();
       //var dead = 0;
 
-      if (rand.Next(1, 101) <= 1)
+      if (rand.Next(1, 101) <= 10)
       {
         //dead++;
         killed = true;
